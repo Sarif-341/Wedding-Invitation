@@ -1,0 +1,181 @@
+@import 'tailwindcss';
+
+/* Safelist palette utilities used with dynamic names, e.g. `bg-${color}` from weddingData */
+@source inline("{bg,text,border}-{paper,coral,sunshine,mint,sky,lilac,ink}");
+
+/* ------------------------------------------------------------------
+ * Scrapbook Design Tokens (Tailwind v4 CSS-first config)
+ * Usage: bg-coral, text-ink, border-ink, font-display, font-hand,
+ *        shadow-hard, shadow-hard-lg, bg-paper, etc.
+ * ------------------------------------------------------------------ */
+@theme {
+  /* Palette — vintage wedding scrapbook.
+   * Token names are kept (coral/sunshine/mint/sky/lilac) so every section re-themes at once:
+   *   coral    = terracotta     sunshine = soft gold      mint  = sage green
+   *   sky      = dusty blue     lilac    = dusty mauve    ink   = warm charcoal-navy */
+  --color-paper: #fffdf7;
+  --color-linen: #f7efdf;
+  --color-kraft: #e7d4b4;
+  --color-coral: #bf5f47;
+  --color-sunshine: #d8b15e;
+  --color-mint: #9db398;
+  --color-sky: #7f9db9;
+  --color-lilac: #b795b2;
+  --color-rose: #dba99d;
+  --color-ink: #2b2d42;
+  /* Deeper variants for text on cream (≥3:1 contrast at display sizes) */
+  --color-terra-deep: #a9503b;
+  --color-sage-deep: #5e7a60;
+  --color-gold-deep: #a8802f;
+  --color-sky-deep: #46688a;
+
+  /* Typography */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-serif-display: 'Fraunces', Georgia, serif;
+  --font-hand: 'Caveat', 'Comic Sans MS', cursive;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* Tactile hard shadows */
+  --shadow-hard-sm: 2px 2px 0px #2b2d42;
+  --shadow-hard: 4px 4px 0px #2b2d42;
+  --shadow-hard-lg: 6px 6px 0px #2b2d42;
+
+  /* Small CSS-only loops (UI hints) */
+  --animate-eq: eq 0.8s ease-in-out infinite;
+  @keyframes eq {
+    0%,
+    100% {
+      height: 25%;
+    }
+    50% {
+      height: 100%;
+    }
+  }
+
+  --animate-nudge: nudge 1.2s ease-in-out infinite;
+  @keyframes nudge {
+    0%,
+    100% {
+      transform: translateX(-2px);
+    }
+    50% {
+      transform: translateX(3px);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    /* Fine paper grain (neutral) */
+    --tex-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    /* Kraft paper: long horizontal fibres in warm brown */
+    --tex-fibre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.32 0 0 0 0 0.18 0 0 0 0.9 -0.08'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='0.16'/%3E%3C/svg%3E");
+    /* Linen weave: two hair-thin warm-brown thread grids (≈3% opacity — felt, not seen) */
+    --tex-linen:
+      repeating-linear-gradient(0deg, rgb(139 105 70 / 0.035) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgb(139 105 70 / 0.028) 0 1px, transparent 1px 3px);
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply text-ink font-body antialiased;
+    min-height: 100dvh;
+    background-color: var(--color-linen);
+    background-image: var(--tex-linen), var(--tex-grain);
+    background-size: auto, 160px 160px;
+  }
+}
+
+@layer components {
+  /* Display serif: lining numerals read clearly in dates and counters */
+  .font-display,
+  .font-serif-display {
+    font-variant-numeric: lining-nums;
+  }
+
+  /* Archival card: cream stock, crisp ink border, soft corners, tactile hard shadow */
+  .paper-card {
+    @apply bg-paper border-2 border-ink shadow-hard rounded-md;
+  }
+
+  /* Washi tape: muted translucent strip with fine hatching and torn (zig-zag) ends.
+   * Position with top/left + rotate utilities; colour with bg-* */
+  .washi {
+    @apply absolute h-6 w-24 opacity-85;
+    background-image: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.28) 0 2px, transparent 2px 7px);
+    clip-path: polygon(
+      0 0, 100% 0, 98% 25%, 100% 50%, 98% 75%, 100% 100%,
+      0 100%, 2% 75%, 0 50%, 2% 25%
+    );
+  }
+
+  /* Fine paper fibre overlay — drop on top of colored shapes */
+  .paper-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.17 0 0 0 0 0.18 0 0 0 0 0.26 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+    opacity: 0.18;
+  }
+
+  /* Linen page: weave + grain over the page's own background-color */
+  .page-texture {
+    background-image: var(--tex-linen), var(--tex-grain);
+    background-size: auto, 160px 160px;
+  }
+
+  /* Kraft page: natural fibres + grain (no ruled lines — avoids the school-notebook look) */
+  .page-kraft {
+    background-image: var(--tex-fibre), var(--tex-grain);
+    background-size: 260px 260px, 160px 160px;
+  }
+
+  /* Very soft writing guide for the wish textarea (warm taupe, no margin line) */
+  .writing-lines {
+    background-image: repeating-linear-gradient(transparent 0 31px, rgb(139 105 70 / 0.16) 31px 32px);
+    background-position: 0 6px;
+  }
+
+  /* Die-cut sticker: white outline (4-way drop-shadow) + hard ink shadow */
+  .sticker-die {
+    filter: drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff)
+      drop-shadow(0 -1.5px 0 #fff) drop-shadow(2.5px 2.5px 0 rgb(43 45 66 / 0.85));
+  }
+
+  /* Cork board: warm kraft base + speckles */
+  .cork-board {
+    background-color: #f2d6a8;
+    background-image:
+      radial-gradient(rgb(160 110 60 / 0.25) 1.2px, transparent 1.6px),
+      radial-gradient(rgb(255 255 255 / 0.35) 1px, transparent 1.5px),
+      radial-gradient(rgb(120 80 40 / 0.18) 0.8px, transparent 1.2px);
+    background-size: 23px 19px, 17px 29px, 11px 13px;
+    background-position: 0 0, 7px 11px, 3px 5px;
+  }
+
+  /* Satin ribbon: terracotta with two gold pin-stripes and a soft sheen */
+  .ribbon-paper {
+    background-color: var(--color-coral);
+    background-image:
+      linear-gradient(
+        to bottom,
+        transparent 0 20%,
+        var(--color-sunshine) 20% 27%,
+        transparent 27% 73%,
+        var(--color-sunshine) 73% 80%,
+        transparent 80%
+      ),
+      linear-gradient(180deg, rgb(255 255 255 / 0.24), transparent 45%, rgb(43 45 66 / 0.14));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
