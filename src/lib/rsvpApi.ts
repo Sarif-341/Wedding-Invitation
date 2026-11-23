@@ -23,7 +23,7 @@ async function request(init?: RequestInit): Promise<unknown> {
   const ctrl = new AbortController()
   const timer = window.setTimeout(() => ctrl.abort(), sheetsApi.timeoutMs)
   try {
-    const res = await fetch(sheetsApi.endpoint, { ...init, signal: ctrl.signal, redirect: 'follow' })
+    const res = await fetch(sheetsApi.endpoint, { ...init, signal: ctrl.signal, redirect: 'follow', cache: 'no-store' })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const json = await res.json()
     if (json && typeof json === 'object' && 'status' in json && (json as { status: unknown }).status === 'error') {

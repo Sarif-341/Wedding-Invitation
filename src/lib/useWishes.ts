@@ -1,39 +1,19 @@
 /**
- * Wish wall state. The shared wall comes from Google Sheets (see rsvpApi.ts); a guest's own notes are also kept in
- * their browser (localStorage) so their note shows instantly and survives a slow or failed sync.
+ * Wish wall state. The wall is exactly what Google Sheets returns (see rsvpApi.ts), plus the notes this guest sends
+ * during the current visit so they appear instantly. Nothing is cached in the browser and there are no sample notes.
  */
 import { useCallback, useEffect, useState } from 'react'
-import { initialWishes, rsvpSection, type PaperColor, type Wish } from '../data/weddingData'
+import type { PaperColor, Wish } from '../data/weddingData'
 import { fetchWishes } from './rsvpApi'
 
-const KEY = 'sz-wishes-v1'
 const COLORS: PaperColor[] = ['sunshine', 'mint', 'sky', 'coral', 'lilac']
 
-function load(): Wish[] {
-  try {
-    const raw = JSON.parse(localStorage.getItem(KEY) ?? '[]')
-    if (!Array.isArray(raw)) return []
-    return raw
-      .filter((w) => w && typeof w.name === 'string' && typeof w.message === 'string' && typeof w.id === 'string')
-      .map((w) => ({
-        id: w.id,
-        name: w.name.slice(0, rsvpSection.nameMax),
-        message: w.message.slice(0, rsvpSection.messageMax),
-        attending: Boolean(w.attending),
-        color: COLORS.includes(w.color) ? w.color : 'sunshine',
-        createdAt: typeof w.createdAt === 'number' ? w.createdAt : undefined,
-      }))
-  } catch {
-    return []
-  }
-}
-
-function persist(list: Wish[]) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(list))
-  } catch {
-    /* private mode / storage full — the wall still works for this visit */
-  }
+/** Older versions kept a guest's notes in the browser; that copy (test notes included) must never come back. */
+const LEGACY_KEY = 'sz-wishes-v1'
+try {
+  localStorage.removeItem(LEGACY_KEY)
+} catch {
+  /* storage unavailable */
 }
 
 export type WallStatus = 'loading' | 'ok' | 'error'
@@ -41,7 +21,8 @@ export type WallStatus = 'loading' | 'ok' | 'error'
 const keyOf = (w: Wish) => `${w.name.trim().toLowerCase()}|${w.message.trim()}`
 
 export function useWishes() {
-  const [mine, setMine] = useState<Wish[]>(load)
+  // Notes sent during this visit, shown at once; they are never stored in the browser
+  const [mine, setMine] = useState<Wish[]>([])
   const [remote, setRemote] = useState<Wish[]>([])
   const [status, setStatus] = useState<WallStatus>('loading')
 
@@ -64,11 +45,7 @@ export function useWishes() {
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       createdAt: Date.now(),
     }
-    setMine((list) => {
-      const next = [wish, ...list].slice(0, 50)
-      persist(next)
-      return next
-    })
+    setMine((list) => [wish, ...list])
     return wish
   }, [])
 
@@ -80,8 +57,6 @@ export function useWishes() {
     seen.add(k)
     return true
   })
-  // Sample note only while the wall would otherwise be empty
-  const wishes = merged.length ? merged : initialWishes
-
-  return { wishes, add, status, refresh }
+  // Empty sheet → empty wall (the page shows an empty state); nothing is invented
+  return { wishes: merged, add, status, refresh }
 }

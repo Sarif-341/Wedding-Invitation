@@ -59,6 +59,9 @@ export function WishWall({
       )}
 
       <div className="page-kraft rounded-xl border-2 border-ink bg-[#EBDCC0] p-4 shadow-hard sm:p-5">
+        {wishes.length === 0 && status !== 'loading' && (
+          <p className="py-10 text-center font-hand text-2xl leading-snug text-ink/70">{rsvpSection.wallEmpty}</p>
+        )}
         <ul className="grid grid-cols-1 items-start gap-5 min-[420px]:grid-cols-2">
           <AnimatePresence initial={false}>
             {wishes.slice(0, visible).map((w, i) => {

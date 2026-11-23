@@ -372,6 +372,7 @@ export const rsvpSection = {
   guestCountMax: 5,
   sendingLabel: 'Mengirim…',
   sendError: 'Koneksi sedang bermasalah, konfirmasimu belum terkirim. Isianmu aman — ketuk kirim lagi ya.',
+  wallEmpty: 'Belum ada ucapan — jadilah yang pertama menempelkan doa di sini ✨',
   wallLoading: 'Memuat ucapan terbaru…',
   wallError: 'Belum bisa memuat ucapan terbaru.',
   wallRetryLabel: 'Coba lagi',
@@ -424,10 +425,6 @@ export const closing = {
   backToTopLabel: 'Kembali ke sampul',
 }
 
-export const initialWishes: Wish[] = [
-  { id: 'w5', name: 'Pak RT', message: 'Selamat menempuh hidup baru, semoga berkah selalu.', attending: true, color: 'coral' },
-]
-
 export const weddingData = {
   couple,
   invitation,
@@ -445,7 +442,6 @@ export const weddingData = {
   rsvpSection,
   guestPass,
   closing,
-  initialWishes,
 } as const
 
 export default weddingData
