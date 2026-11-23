@@ -58,6 +58,7 @@
 
 ## 7. Google Sheets backend (Apps Script Web App)
 
+- The Apps Script itself lives in `apps-script/Code.gs` (paste into the sheet, see its README); it fills `Kehadiran` automatically.
 - Endpoint + timeout: `sheetsApi` in `weddingData.ts`; client in `src/lib/rsvpApi.ts` (POST as `text/plain` to avoid CORS preflight; never throws, returns `{ok}`).
 - `submit_rsvp` (name, attending/status, guestCount, ticketNo, message, submissionId) is sent first; only on success is the wish pinned and the pass shown. On failure the form stays filled with a retry message; the same `submissionId` is reused on retries.
 - `GET` fills the wish wall (`useWishes`); the sample wish only shows while the wall would be empty. Rows are read tolerantly (`name|nama`, `message|ucapan|pesan`, `status|attending`, `timestamp|createdAt`).

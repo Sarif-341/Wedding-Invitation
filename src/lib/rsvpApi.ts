@@ -44,17 +44,26 @@ async function post(body: Record<string, unknown>): Promise<Result> {
   }
 }
 
+/** Value of the sheet's `Kehadiran` column — always sent explicitly, never left for someone to type in. */
+const kehadiran = (attending: boolean) => (attending ? 'Hadir' : 'Tidak Hadir')
+
 export const submitRsvp = (p: RsvpPayload) =>
   post({
     action: 'submit_rsvp',
     ...p,
-    status: p.attending ? 'Hadir' : 'Tidak Hadir',
+    // same data under the sheet's own column names (Nama, Kehadiran, Jumlah, TicketNo, Ucapan)
+    nama: p.name,
+    kehadiran: kehadiran(p.attending),
+    status: kehadiran(p.attending),
+    jumlah: p.attending ? p.guestCount : 0,
+    ucapan: p.message,
     ticketNo: p.attending ? p.ticketNo : '',
     submittedAt: new Date().toISOString(),
   })
 
+/** Only guests who attend ever hold a ticket, so a download always means `Kehadiran = Hadir`. */
 export const markDownloaded = (ticketNo: string) =>
-  post({ action: 'mark_downloaded', ticketNo, downloadedAt: new Date().toISOString() })
+  post({ action: 'mark_downloaded', ticketNo, kehadiran: kehadiran(true), downloaded: 'YES', downloadedAt: new Date().toISOString() })
 
 // ------------------------------------------------------------------ wish wall
 const COLORS: PaperColor[] = ['sunshine', 'mint', 'sky', 'coral', 'lilac']
